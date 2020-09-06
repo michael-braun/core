@@ -1,0 +1,49 @@
+{
+  "name": "@visual-nodes/core",
+  "version": "0.0.0",
+  "description": "",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "scripts": {
+    "type-check": "tsc --noEmit",
+    "type-check:watch": "npm run type-check -- --watch",
+    "build": "npm run build:types && npm run build:js",
+    "build:types": "tsc --emitDeclarationOnly",
+    "build:js": "babel src --out-dir lib --extensions \".ts,.tsx\" --source-maps inline --copy-files",
+    "publish:beta": "npm version prerelease --preid=beta && npm publish --tag=beta",
+    "start": "concurrently \"npm run build:types -- --watch\" \"npm run build:js -- --watch --verbose\"",
+    "prepublishOnly": "npm run build",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/michael-braun/core.git"
+  },
+  "keywords": [
+    "visual-nodes",
+    "core"
+  ],
+  "author": "Michael Braun",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/michael-braun/core/issues"
+  },
+  "publishConfig": {
+    "registry": "https://npm.michael-braun.me"
+  },
+  "homepage": "https://github.com/michael-braun/core#readme",
+  "dependencies": {
+    "@babel/cli": "^7.10.5",
+    "@babel/core": "^7.10.5",
+    "@babel/preset-env": "^7.10.4",
+    "events": "3.2.0",
+    "uuid": "^8.3.0"
+  },
+  "devDependencies": {
+    "@babel/plugin-proposal-class-properties": "^7.10.4",
+    "@babel/preset-typescript": "7.10.4",
+    "@types/uuid": "^8.3.0",
+    "concurrently": "^5.2.0",
+    "typescript": "3.9.7"
+  }
+}
