@@ -12,7 +12,7 @@ export default class CustomEventEmitter extends EventEmitter {
         return !!listeners.length;
     }
 
-    on<K extends keyof CoreEventsTypes>(event: K | string, callback: (data: CoreEventsTypes[K] | any) => void) {
+    on<K extends keyof CoreEventsTypes>(event: K | string, callback: (data: CoreEventsTypes[K]) => void) {
         return super.on(event, callback);
     }
 }
