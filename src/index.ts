@@ -5,6 +5,12 @@ import ControlDefinitionManager from "./manager/ControlDefinitionManager";
 import ConfigDefinitionManager from "./manager/ConfigDefinitionManager";
 import PluginManager from "./manager/PluginManager";
 
+export * from './types/ComponentDefinition';
+export * from './types/ConfigDefinition';
+export * from './types/ControlDefinition';
+export * from './types/SocketDefinition';
+export { CoreEvents } from './types/CoreEvents';
+
 export default class VisualNodesCore {
     readonly #events = new CustomEventEmitter();
 
