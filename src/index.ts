@@ -4,17 +4,19 @@ import SocketDefinitionManager from "./manager/SocketDefinitionManager";
 import ControlDefinitionManager from "./manager/ControlDefinitionManager";
 import ConfigDefinitionManager from "./manager/ConfigDefinitionManager";
 import PluginManager from "./manager/PluginManager";
+import { CoreEventsTypes } from "./types/CoreEvents";
 
 export * from './types/ComponentDefinition';
 export * from './types/ConfigDefinition';
 export * from './types/ControlDefinition';
 export * from './types/SocketDefinition';
-export { CoreEvents } from './types/CoreEvents';
+export * from './types/interfaces/IDefinition';
+export { CoreEvents, CoreEventsTypes } from './types/CoreEvents';
 
-export default class VisualNodesCore {
-    readonly #events = new CustomEventEmitter();
+export default class VisualNodesCore<T extends CoreEventsTypes> {
+    readonly #events = new CustomEventEmitter<T>();
 
-    readonly #componentDefinitions = new ComponentDefinitionManager(this);
+    readonly #componentDefinitions: ComponentDefinitionManager = new ComponentDefinitionManager(this);
 
     readonly #socketDefinitions = new SocketDefinitionManager(this);
 
@@ -26,7 +28,7 @@ export default class VisualNodesCore {
 
 
 
-    get events(): CustomEventEmitter {
+    get events(): CustomEventEmitter<T> {
         return this.#events;
     }
 

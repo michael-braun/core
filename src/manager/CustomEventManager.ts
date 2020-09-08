@@ -1,9 +1,11 @@
 import { EventEmitter } from 'events';
-import { CoreEvents, CoreEventsTypes } from "../types/CoreEvents";
+import { CoreEventsTypes } from "../types/CoreEvents";
 
-export default class CustomEventEmitter extends EventEmitter {
-    async emitResponse<K extends keyof CoreEventsTypes>(event: K | string, data: CoreEventsTypes[K]): Promise<boolean> {
-        const listeners = this.listeners(event);
+type ForceCastString<T> = string;
+
+export default class CustomEventEmitter<T extends CoreEventsTypes> extends EventEmitter {
+    async emitResponse<K extends keyof T>(event: K | string, data: T[K]): Promise<boolean> {
+        const listeners = this.listeners(event as string);
 
         for (let i = 0, z = listeners.length; i < z; i += 1) {
             await listeners[i](data);
@@ -12,7 +14,7 @@ export default class CustomEventEmitter extends EventEmitter {
         return !!listeners.length;
     }
 
-    on<K extends keyof CoreEventsTypes>(event: K | string, callback: (data: CoreEventsTypes[K]) => void) {
-        return super.on(event, callback);
+    on<K extends keyof T>(event: ForceCastString<K> | string, callback: (data: T[K]) => void) {
+        return super.on(event as string, callback);
     }
 }

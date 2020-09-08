@@ -25,7 +25,11 @@ export type DefinitionEvent<T> = {
     definition: T,
 };
 
-export type CoreEventsTypes = {
+export interface IEvents{
+    [key: string]: any;
+}
+
+export interface CoreEventsTypes extends IEvents {
     [CoreEvents.REGISTER_COMPONENT_DEFINITION]: DefinitionEvent<ComponentDefinition>;
     [CoreEvents.REGISTERED_COMPONENT_DEFINITION]: DefinitionEvent<ComponentDefinition>;
     [CoreEvents.REGISTER_SOCKET_DEFINITION]: DefinitionEvent<SocketDefinition>;
@@ -43,8 +47,8 @@ export type CoreEventsTypes = {
     };
     [CoreEvents.INSTALL_PLUGIN]: {
         id: string,
-    }
+    };
     [CoreEvents.INSTALLED_PLUGIN]: {
         id: string,
-    }
+    };
 }

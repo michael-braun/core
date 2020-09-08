@@ -1,10 +1,10 @@
 import Manager, { ManagerEvent } from "./Manager";
-import VisualNodesCore from "../index";
+import VisualNodesCore, { CoreEventsTypes } from "../index";
 import { CoreEvents } from "../types/CoreEvents";
 import { SocketDefinition } from "../types/SocketDefinition";
 
 export default class SocketDefinitionManager extends Manager<SocketDefinition> {
-    constructor(core: VisualNodesCore) {
+    constructor(core: VisualNodesCore<CoreEventsTypes>) {
         super(core, {
             [ManagerEvent.REGISTER]: CoreEvents.REGISTER_SOCKET_DEFINITION,
             [ManagerEvent.REGISTERED]: CoreEvents.REGISTERED_SOCKET_DEFINITION,

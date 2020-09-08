@@ -1,5 +1,5 @@
 import { IDefinition } from "../types/interfaces/IDefinition";
-import VisualNodesCore from "../index";
+import VisualNodesCore, { CoreEventsTypes } from "../index";
 import { CoreEvents } from "../types/CoreEvents";
 import { deepFreeze } from "../utils/deepFreeze";
 
@@ -24,11 +24,11 @@ export default class Manager<T extends IDefinition> {
 
     protected definitionsArray: T[] | null = null;
 
-    readonly #core: VisualNodesCore;
+    readonly #core: VisualNodesCore<CoreEventsTypes>;
 
     readonly #eventConfig: ManagerEventConfig;
 
-    constructor(core: VisualNodesCore, eventConfig: ManagerEventConfig) {
+    constructor(core: VisualNodesCore<CoreEventsTypes>, eventConfig: ManagerEventConfig) {
         this.#core = core;
 
         this.#eventConfig = eventConfig;
@@ -83,7 +83,7 @@ export default class Manager<T extends IDefinition> {
         this.definitionsArray = null;
     }
 
-    protected get core(): VisualNodesCore {
+    protected get core(): VisualNodesCore<CoreEventsTypes> {
         return this.#core;
     }
 }
