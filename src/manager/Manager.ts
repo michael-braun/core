@@ -34,6 +34,11 @@ export default class Manager<T extends IDefinition> {
         this.#eventConfig = eventConfig;
     }
 
+    protected async registerInternal(definition: T, dependencies?: DefinitionDependency) {
+        this.definitions[definition.id] = definition;
+        this.definitionDependencies[definition.id] = dependencies || false;
+    }
+
     async register(definition: T, dependencies?: DefinitionDependency) {
         if (this.has(definition.id)) {
             return false;
@@ -48,8 +53,7 @@ export default class Manager<T extends IDefinition> {
 
         deepFreeze(definition);
 
-        this.definitions[definition.id] = definition;
-        this.definitionDependencies[definition.id] = dependencies || false;
+        await this.registerInternal(definition, dependencies)
         this.invalidateCache();
 
         this.core.events.emit(this.#eventConfig[ManagerEvent.REGISTERED], {
