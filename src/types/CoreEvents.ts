@@ -16,6 +16,8 @@ export enum CoreEvents {
     REGISTER_CONFIG_CONTROL_DEFINITION = 'registeredConfigControlDefinition',
     INSTALL_PLUGIN = 'installPlugin',
     INSTALLED_PLUGIN = 'installedPlugin',
+    REGISTER_FEATURE_SUPPORT = 'registerFeatureSupport',
+    REGISTERED_FEATURE_SUPPORT = 'registeredFeatureSupport',
 }
 
 export type DefinitionEvent<T> = {
@@ -49,6 +51,12 @@ export interface CoreEventsTypes extends IEvents {
         id: string,
     };
     [CoreEvents.INSTALLED_PLUGIN]: {
+        id: string,
+    };
+    [CoreEvents.REGISTER_FEATURE_SUPPORT]: {
+        id: string,
+    };
+    [CoreEvents.REGISTERED_FEATURE_SUPPORT]: {
         id: string,
     };
 }
