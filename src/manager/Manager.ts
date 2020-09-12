@@ -16,6 +16,7 @@ export interface ManagerEventConfig {
 
 export type DefinitionDependency = {
     plugins?: string[],
+    features?: string[],
 }
 
 export default class Manager<T extends IDefinition> extends BaseManager<T> {
