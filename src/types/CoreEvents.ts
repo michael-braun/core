@@ -3,6 +3,7 @@ import { DefinitionDependency } from "../manager/Manager";
 import { SocketDefinition } from "./SocketDefinition";
 import { ControlDefinition } from "./ControlDefinition";
 import { ConfigDefinition } from "./ConfigDefinition";
+import { PluginContext } from "./Plugin";
 
 export enum CoreEvents {
     REGISTER_COMPONENT_DEFINITION = 'registerComponentDefinition',
@@ -18,6 +19,7 @@ export enum CoreEvents {
     INSTALLED_PLUGIN = 'installedPlugin',
     REGISTER_FEATURE_SUPPORT = 'registerFeatureSupport',
     REGISTERED_FEATURE_SUPPORT = 'registeredFeatureSupport',
+    CREATE_PLUGIN_CONTEXT = 'createPluginContext',
 }
 
 export type DefinitionEvent<T> = {
@@ -40,6 +42,10 @@ export interface CoreEventsTypes extends IEvents {
     [CoreEvents.REGISTERED_CONTROL_DEFINITION]: DefinitionEvent<ControlDefinition>;
     [CoreEvents.REGISTER_CONFIG_DEFINITION]: DefinitionEvent<ConfigDefinition>;
     [CoreEvents.REGISTERED_CONFIG_DEFINITION]: DefinitionEvent<ConfigDefinition>;
+    [CoreEvents.CREATE_PLUGIN_CONTEXT]: {
+        plugin: string,
+        ctx: PluginContext,
+    };
     [CoreEvents.REGISTER_CONFIG_CONTROL_DEFINITION]: {
         id: string,
         plugin: string,

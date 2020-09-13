@@ -6,6 +6,7 @@ import ConfigDefinitionManager from "./manager/ConfigDefinitionManager";
 import PluginManager from "./manager/PluginManager";
 import { CoreEventsTypes } from "./types/CoreEvents";
 import FeatureSupportManager from "./manager/FeatureSupportManager";
+import { PluginContext } from "./types/Plugin";
 
 export * from './types/ComponentDefinition';
 export * from './types/ConfigDefinition';
@@ -51,7 +52,7 @@ export default class VisualNodesCore<T extends CoreEventsTypes> {
         return this.#configDefinitions;
     }
 
-    get plugins(): PluginManager {
+    get plugins(): PluginManager<PluginContext> {
         return this.#plugins;
     }
 

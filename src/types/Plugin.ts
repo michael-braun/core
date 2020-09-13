@@ -5,8 +5,8 @@ export type PluginContext = {
     core: VisualNodesCore<CoreEventsTypes>;
 };
 
-export interface Plugin extends IDefinition {
+export interface Plugin<T extends PluginContext> extends IDefinition {
     id: string;
 
-    install: (ctx: PluginContext) => void;
+    install: (ctx: T) => void;
 }
