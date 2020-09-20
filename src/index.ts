@@ -14,6 +14,12 @@ export * from './types/ControlDefinition';
 export * from './types/SocketDefinition';
 export * from './types/interfaces/IDefinition';
 export * from './types/ProgramDefinition';
+export {
+    default as Program,
+} from './utils/Program';
+export {
+    default as EditableProgram,
+} from './utils/EditableProgram';
 export { CoreEvents, CoreEventsTypes } from './types/CoreEvents';
 
 export default class VisualNodesCore<T extends CoreEventsTypes> {
