@@ -1,7 +1,10 @@
 import Program from "./Program";
 import { EventEmitter } from "events";
 import throttle from "lodash.throttle";
-import { ProgramNode } from "..";
+import { v4 as uuid } from 'uuid';
+
+import VisualNodesCore, { CoreEventsTypes, ProgramDefinition, ProgramNode } from "..";
+import { Point } from "../types/Point";
 
 type NodeSocket = {
     node: string,
@@ -11,7 +14,44 @@ type NodeSocket = {
 export default class EditableProgram extends Program {
     readonly #events = new EventEmitter();
 
+    readonly #core: VisualNodesCore<any>;
+
     #moveCache: { [node: string]: { x: number, y: number, throttle: () => void } } = {};
+
+    constructor(core: VisualNodesCore<CoreEventsTypes>, program: ProgramDefinition) {
+        super(program);
+
+        this.#core = core;
+    }
+
+    createNode(componentId: string, position: Point): boolean {
+        const component = this.#core.componentDefinitions.get(componentId);
+
+        if (!component) return false;
+
+        const newId = uuid();
+
+        this.program = {
+            ...this.program,
+            nodes: {
+                ...this.program.nodes,
+                [newId]: {
+                    id: newId,
+                    name: component.id,
+                    inputs: {},
+                    outputs: {},
+                    data: {},
+                    position: [position.x, position.y]
+                }
+            },
+        }
+
+        this.#events.emit('update-program');
+
+        this.invalidateCache();
+
+        return true;
+    }
 
     moveNode(nodeId: string, { diffX, diffY }: { diffX: number, diffY: number }) {
         if (!this.#moveCache[nodeId]) {

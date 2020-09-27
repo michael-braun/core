@@ -12,36 +12,36 @@ export type ConnectionInfo = {
 }
 
 export default class Program {
-    #program: ProgramDefinition;
+    protected program: ProgramDefinition;
 
     #nodeCache: ProgramNode[] | null = null;
 
     #connectionCache: ConnectionInfo[] | null = null;
 
     constructor(program: ProgramDefinition) {
-        this.#program = program;
+        this.program = program;
     }
 
     getNodes() {
         if (!this.#nodeCache) {
-            this.#nodeCache = Object.values(this.#program.nodes);
+            this.#nodeCache = Object.values(this.program.nodes);
         }
 
         return this.#nodeCache;
     }
 
     getNode(id: string): ProgramNode {
-        return this.#program.nodes[id];
+        return this.program.nodes[id];
     }
 
     updateNode(id: string, cb: (node: ProgramNode) => ProgramNode) {
-        const newNode = cb(this.#program.nodes[id]);
+        const newNode = cb(this.program.nodes[id]);
 
         if (newNode) {
-            this.#program = {
-                ...this.#program,
+            this.program = {
+                ...this.program,
                 nodes: {
-                    ...this.#program.nodes,
+                    ...this.program.nodes,
                     [id]: newNode,
                 },
             }
@@ -74,7 +74,7 @@ export default class Program {
         return this.#connectionCache;
     }
 
-    private invalidateCache() {
+    protected invalidateCache() {
         this.#nodeCache = null;
         this.#connectionCache = null;
     }

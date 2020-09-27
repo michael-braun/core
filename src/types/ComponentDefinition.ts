@@ -19,6 +19,7 @@ export type ComponentDefinitionEntry = {
 
 export interface ComponentDefinition extends IDefinition {
     id: string;
+    groups?: string[]
     inputs?: ComponentDefinitionSocket[];
     outputs?: ComponentDefinitionSocket[];
     settings?: ComponentDefinitionSetting[];
