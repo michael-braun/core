@@ -76,14 +76,36 @@ export default class EditableProgram extends Program {
         this.#moveCache[nodeId].throttle();
     }
 
-    connectSockets(node1: NodeSocket, node2: NodeSocket) {
+    connectSockets(node1: NodeSocket, node2: NodeSocket): boolean {
+        const programNode1 = this.getNode(node1.node);
+        const programNode2 = this.getNode(node2.node);
+
+        const node1ComponentDefinition = this.#core.componentDefinitions.get(programNode1.name);
+        const node2ComponentDefinition = this.#core.componentDefinitions.get(programNode2.name);
+
+        const node1Socket = node1ComponentDefinition?.outputs?.find(i => i.id === node1.socket);
+        const node2Socket = node2ComponentDefinition?.inputs?.find(i => i.id === node2.socket);
+
+        if (!node1Socket || !node2Socket) {
+            return false;
+        }
+
+        if (!this.#core.socketDefinitions.isCompatible(node1Socket.type, node2Socket.type)) {
+            return false;
+        }
+
         this.updateNode(node1.node, (programNode: ProgramNode) => {
+            let outputConnections = (programNode.outputs[node1.socket]?.connections || []);
+            if (!node1Socket.multiple) {
+                outputConnections = [];
+            }
+
             return {
                 ...programNode,
                 outputs: {
                     ...programNode.outputs,
                     [node1.socket]: {
-                        connections: [...(programNode.outputs[node1.socket]?.connections || []), {
+                        connections: [...outputConnections, {
                             node: node2.node,
                             input: node2.socket,
                         }],
@@ -93,12 +115,17 @@ export default class EditableProgram extends Program {
         });
 
         this.updateNode(node1.node, (programNode: ProgramNode) => {
+            let inputConnections = (programNode.inputs[node2.socket]?.connections || []);
+            if (!node2Socket.multiple) {
+                inputConnections = [];
+            }
+
             return {
                 ...programNode,
                 inputs: {
                     ...programNode.inputs,
                     [node2.socket]: {
-                        connections: [...(programNode.inputs[node2.socket]?.connections || []), {
+                        connections: [...inputConnections, {
                             node: node1.node,
                             output: node1.socket,
                         }],
@@ -108,6 +135,8 @@ export default class EditableProgram extends Program {
         });
 
         this.#events.emit('update-program');
+
+        return true;
     }
 
     get events() {
