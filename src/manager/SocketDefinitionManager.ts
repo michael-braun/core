@@ -14,4 +14,8 @@ export default class SocketDefinitionManager extends Manager<SocketDefinition> {
     isActionSocket(id: string) {
         return this.get(id)?.isAction || false;
     }
+
+    isCompatible(type1: string, type2:string): boolean {
+        return type1 === type2;
+    }
 }
