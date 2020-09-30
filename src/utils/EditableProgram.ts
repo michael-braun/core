@@ -76,6 +76,18 @@ export default class EditableProgram extends Program {
         this.#moveCache[nodeId].throttle();
     }
 
+    updateNodeSetting(nodeId: string, key: string, value: any) {
+        this.updateNode(nodeId, (node) => ({
+            ...node,
+            data: {
+                ...node.data,
+                [key]: value,
+            },
+        }));
+
+        this.#events.emit('update-node', { node: nodeId });
+    }
+
     connectSockets(node1: NodeSocket, node2: NodeSocket): boolean {
         const programNode1 = this.getNode(node1.node);
         const programNode2 = this.getNode(node2.node);
