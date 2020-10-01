@@ -5,6 +5,7 @@ import { v4 as uuid } from 'uuid';
 
 import VisualNodesCore, { CoreEventsTypes, ProgramDefinition, ProgramNode } from "..";
 import { Point } from "../types/Point";
+import { ProgramPatch, ProgramPatchType } from "./ProgramPatch";
 
 type NodeSocket = {
     node: string,
@@ -31,24 +32,14 @@ export default class EditableProgram extends Program {
 
         const newId = uuid();
 
-        this.program = {
-            ...this.program,
-            nodes: {
-                ...this.program.nodes,
-                [newId]: {
-                    id: newId,
-                    name: component.id,
-                    inputs: {},
-                    outputs: {},
-                    data: {},
-                    position: [position.x, position.y]
-                }
+        this.applyPatch({
+            type: ProgramPatchType.CREATE_NODE,
+            node: newId,
+            payload: {
+                componentId: component.id,
+                position,
             },
-        }
-
-        this.#events.emit('update-program');
-
-        this.invalidateCache();
+        });
 
         return true;
     }
@@ -59,14 +50,17 @@ export default class EditableProgram extends Program {
                 x: 0,
                 y: 0,
                 throttle: throttle(() => {
-                    this.updateNode(nodeId, (node) => ({
-                        ...node,
-                        position: [node.position[0] + this.#moveCache[nodeId].x, node.position[1] + this.#moveCache[nodeId].y],
-                    }));
+                    this.applyPatch({
+                        type: ProgramPatchType.TRANSLATE_NODE,
+                        node: nodeId,
+                        payload: {
+                            x: this.#moveCache[nodeId].x,
+                            y: this.#moveCache[nodeId].y,
+                        },
+                    });
+
                     this.#moveCache[nodeId].x = 0;
                     this.#moveCache[nodeId].y = 0;
-
-                    this.#events.emit('update-node', { node: nodeId });
                 }, 25),
             }
         }
@@ -77,15 +71,33 @@ export default class EditableProgram extends Program {
     }
 
     updateNodeSetting(nodeId: string, key: string, value: any) {
-        this.updateNode(nodeId, (node) => ({
-            ...node,
-            data: {
-                ...node.data,
-                [key]: value,
+        this.applyPatch({
+            type: ProgramPatchType.UPDATE_NODE_SETTING,
+            node: nodeId,
+            payload: {
+                key,
+                value,
             },
-        }));
+        });
 
         this.#events.emit('update-node', { node: nodeId });
+    }
+
+    applyPatch(patch: ProgramPatch): boolean {
+        const retVal = super.applyPatch(patch);
+
+        switch(patch.type) {
+            case ProgramPatchType.CREATE_NODE:
+            case ProgramPatchType.CONNECT_SOCKETS:
+                this.#events.emit('update-program');
+                break;
+            case ProgramPatchType.UPDATE_NODE_SETTING:
+            case ProgramPatchType.TRANSLATE_NODE:
+                this.#events.emit('update-node', { node: patch.node });
+                break;
+        }
+
+        return retVal;
     }
 
     connectSockets(node1: NodeSocket, node2: NodeSocket): boolean {
@@ -106,47 +118,21 @@ export default class EditableProgram extends Program {
             return false;
         }
 
-        this.updateNode(node1.node, (programNode: ProgramNode) => {
-            let outputConnections = (programNode.outputs[node1.socket]?.connections || []);
-            if (!node1Socket.multiple) {
-                outputConnections = [];
-            }
-
-            return {
-                ...programNode,
-                outputs: {
-                    ...programNode.outputs,
-                    [node1.socket]: {
-                        connections: [...outputConnections, {
-                            node: node2.node,
-                            input: node2.socket,
-                        }],
-                    }
-                }
+        this.applyPatch({
+            type: ProgramPatchType.CONNECT_SOCKETS,
+            payload: {
+                input: {
+                    node: node1.node,
+                    socket: node1.socket,
+                    exclusive: !node1Socket.multiple,
+                },
+                output: {
+                    node: node2.node,
+                    socket: node2.socket,
+                    exclusive: !node2Socket.multiple,
+                },
             }
         });
-
-        this.updateNode(node1.node, (programNode: ProgramNode) => {
-            let inputConnections = (programNode.inputs[node2.socket]?.connections || []);
-            if (!node2Socket.multiple) {
-                inputConnections = [];
-            }
-
-            return {
-                ...programNode,
-                inputs: {
-                    ...programNode.inputs,
-                    [node2.socket]: {
-                        connections: [...inputConnections, {
-                            node: node1.node,
-                            output: node1.socket,
-                        }],
-                    }
-                }
-            }
-        });
-
-        this.#events.emit('update-program');
 
         return true;
     }

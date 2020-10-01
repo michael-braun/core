@@ -1,4 +1,5 @@
-import { OutputSocketConnection, ProgramDefinition, ProgramNode, SocketConnection, SocketConnections } from "..";
+import { ProgramDefinition, ProgramNode } from "..";
+import { ProgramPatch, ProgramPatchType } from "./ProgramPatch";
 
 export type ConnectionInfo = {
     output: {
@@ -72,6 +73,95 @@ export default class Program {
         }
 
         return this.#connectionCache;
+    }
+
+    applyPatch(patch: ProgramPatch): boolean {
+        switch (patch.type) {
+            case ProgramPatchType.CREATE_NODE:
+                this.program = {
+                    ...this.program,
+                    nodes: {
+                        ...this.program.nodes,
+                        [patch.node]: {
+                            id: patch.node,
+                            name: patch.payload.componentId,
+                            inputs: {},
+                            outputs: {},
+                            data: {},
+                            position: [patch.payload.position.x, patch.payload.position.y],
+                        },
+                    },
+                };
+
+                this.invalidateCache();
+                return true;
+            case ProgramPatchType.TRANSLATE_NODE:
+                this.updateNode(patch.node, (node) => ({
+                    ...node,
+                    position: [
+                        node.position[0] + patch.payload.x,
+                        node.position[1] + patch.payload.y,
+                    ],
+                }));
+
+                this.invalidateCache();
+                return true;
+            case ProgramPatchType.UPDATE_NODE_SETTING:
+                this.updateNode(patch.node, (node) => ({
+                    ...node,
+                    data: {
+                        ...node.data,
+                        [patch.payload.key]: patch.payload.value,
+                    },
+                }));
+
+                this.invalidateCache();
+                return true;
+            case ProgramPatchType.CONNECT_SOCKETS:
+                this.updateNode(patch.payload.input.node, (programNode: ProgramNode) => {
+                    let outputConnections = (programNode.outputs[patch.payload.input.socket]?.connections || []);
+                    if (patch.payload.input.exclusive) {
+                        outputConnections = [];
+                    }
+
+                    return {
+                        ...programNode,
+                        outputs: {
+                            ...programNode.outputs,
+                            [patch.payload.input.socket]: {
+                                connections: [...outputConnections, {
+                                    node: patch.payload.output.node,
+                                    input: patch.payload.output.socket,
+                                }],
+                            }
+                        }
+                    }
+                });
+
+                this.updateNode(patch.payload.output.node, (programNode: ProgramNode) => {
+                    let inputConnections = (programNode.inputs[patch.payload.output.socket]?.connections || []);
+                    if (patch.payload.output.exclusive) {
+                        inputConnections = [];
+                    }
+
+                    return {
+                        ...programNode,
+                        inputs: {
+                            ...programNode.inputs,
+                            [patch.payload.output.socket]: {
+                                connections: [...inputConnections, {
+                                    node: patch.payload.input.node,
+                                    output: patch.payload.input.socket,
+                                }],
+                            }
+                        }
+                    }
+                });
+
+                return true;
+            default:
+                return false;
+        }
     }
 
     protected invalidateCache() {
