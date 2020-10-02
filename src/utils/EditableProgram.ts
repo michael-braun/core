@@ -86,6 +86,8 @@ export default class EditableProgram extends Program {
     applyPatch(patch: ProgramPatch): boolean {
         const retVal = super.applyPatch(patch);
 
+        this.#events.emit('apply-patch', { patch });
+
         switch(patch.type) {
             case ProgramPatchType.CREATE_NODE:
             case ProgramPatchType.CONNECT_SOCKETS:
@@ -131,7 +133,7 @@ export default class EditableProgram extends Program {
                     socket: node2.socket,
                     exclusive: !node2Socket.multiple,
                 },
-            }
+            },
         });
 
         return true;
