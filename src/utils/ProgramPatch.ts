@@ -5,7 +5,7 @@ export enum ProgramPatchType {
     UPDATE_NODE_SETTING,
 }
 
-type CreateNodePatch = {
+export type CreateNodePatch = {
     type: ProgramPatchType.CREATE_NODE,
     node: string;
     payload: {
@@ -17,7 +17,7 @@ type CreateNodePatch = {
     };
 };
 
-type TranslateNodePatch = {
+export type TranslateNodePatch = {
     type: ProgramPatchType.TRANSLATE_NODE;
     node: string;
     payload: {
@@ -26,7 +26,7 @@ type TranslateNodePatch = {
     };
 };
 
-type ConnectSocketsPatch = {
+export type ConnectSocketsPatch = {
     type: ProgramPatchType.CONNECT_SOCKETS;
     payload: {
         input: {
@@ -42,7 +42,7 @@ type ConnectSocketsPatch = {
     };
 };
 
-type UpdateNodeSettingsPatch = {
+export type UpdateNodeSettingsPatch = {
     type: ProgramPatchType.UPDATE_NODE_SETTING;
     node: string;
     payload: {
