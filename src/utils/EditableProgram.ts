@@ -92,6 +92,7 @@ export default class EditableProgram extends Program {
             case ProgramPatchType.CREATE_NODE:
             case ProgramPatchType.CONNECT_SOCKETS:
             case ProgramPatchType.DISCONNECT_SOCKETS:
+            case ProgramPatchType.DELETE_NODE:
                 this.#events.emit('update-program');
                 break;
             case ProgramPatchType.UPDATE_NODE_SETTING:
@@ -157,6 +158,10 @@ export default class EditableProgram extends Program {
     }
 
     deleteNode(nodeId: string) {
+        if (!this.program.nodes[nodeId]) {
+            return false;
+        }
+
         Object.entries(this.program.nodes[nodeId].inputs).forEach(([key, value]) => {
             value.connections.forEach((val) => {
                 this.disconnectSockets({
