@@ -159,6 +159,35 @@ export default class Program {
                 });
 
                 return true;
+            case ProgramPatchType.DISCONNECT_SOCKETS:
+                this.updateNode(patch.payload.input.node, (node) => {
+                    return ({
+                        ...node,
+                        outputs: {
+                            ...node.outputs,
+                            [patch.payload.input.socket]: {
+                                connections: node.outputs[patch.payload.input.socket].connections.filter((c) => {
+                                    return c.node === patch.payload.output.node && c.input === patch.payload.output.socket;
+                                }),
+                            }
+                        }
+                    })
+                });
+
+                this.updateNode(patch.payload.output.node, (node) => ({
+                    ...node,
+                    inputs: {
+                        ...node.inputs,
+                        [patch.payload.output.socket]: {
+                            connections: node.inputs[patch.payload.output.socket].connections.filter((c) => {
+                                return c.node === patch.payload.input.node && c.output === patch.payload.input.socket;
+                            }),
+                        }
+                    }
+                }));
+
+                this.invalidateCache();
+                return true;
             default:
                 return false;
         }

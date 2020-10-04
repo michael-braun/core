@@ -3,7 +3,7 @@ import { EventEmitter } from "events";
 import throttle from "lodash.throttle";
 import { v4 as uuid } from 'uuid';
 
-import VisualNodesCore, { CoreEventsTypes, ProgramDefinition, ProgramNode } from "..";
+import VisualNodesCore, { CoreEventsTypes, ProgramDefinition } from "..";
 import { Point } from "../types/Point";
 import { ProgramPatch, ProgramPatchType } from "./ProgramPatch";
 
@@ -91,6 +91,7 @@ export default class EditableProgram extends Program {
         switch(patch.type) {
             case ProgramPatchType.CREATE_NODE:
             case ProgramPatchType.CONNECT_SOCKETS:
+            case ProgramPatchType.DISCONNECT_SOCKETS:
                 this.#events.emit('update-program');
                 break;
             case ProgramPatchType.UPDATE_NODE_SETTING:
@@ -137,6 +138,48 @@ export default class EditableProgram extends Program {
         });
 
         return true;
+    }
+
+    disconnectSockets(node1: NodeSocket, node2: NodeSocket) {
+        this.applyPatch({
+            type: ProgramPatchType.DISCONNECT_SOCKETS,
+            payload: {
+                input: {
+                    node: node1.node,
+                    socket: node1.socket,
+                },
+                output: {
+                    node: node2.node,
+                    socket: node2.socket,
+                },
+            },
+        });
+    }
+
+    deleteNode(nodeId: string) {
+        Object.entries(this.program.nodes[nodeId].inputs).forEach(([key, value]) => {
+            value.connections.forEach((val) => {
+                this.disconnectSockets({
+                    node: String(val.node),
+                    socket: val.output,
+                }, {
+                    node: nodeId,
+                    socket: key,
+                });
+            });
+        });
+
+        Object.entries(this.program.nodes[nodeId].outputs).forEach(([key, value]) => {
+            value.connections.forEach((val) => {
+                this.disconnectSockets({
+                    node: nodeId,
+                    socket: key,
+                }, {
+                    node: String(val.node),
+                    socket: val.input,
+                });
+            });
+        });
     }
 
     get events() {

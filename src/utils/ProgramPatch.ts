@@ -3,6 +3,7 @@ export enum ProgramPatchType {
     TRANSLATE_NODE,
     CONNECT_SOCKETS,
     UPDATE_NODE_SETTING,
+    DISCONNECT_SOCKETS,
 }
 
 export type CreateNodePatch = {
@@ -41,6 +42,19 @@ export type ConnectSocketsPatch = {
         };
     };
 };
+export type DisconnectSocketsPatch = {
+    type: ProgramPatchType.DISCONNECT_SOCKETS;
+    payload: {
+        input: {
+            node: string;
+            socket: string;
+        };
+        output: {
+            node: string;
+            socket: string;
+        };
+    };
+};
 
 export type UpdateNodeSettingsPatch = {
     type: ProgramPatchType.UPDATE_NODE_SETTING;
@@ -51,4 +65,4 @@ export type UpdateNodeSettingsPatch = {
     };
 };
 
-export type ProgramPatch = CreateNodePatch | TranslateNodePatch | ConnectSocketsPatch | UpdateNodeSettingsPatch;
+export type ProgramPatch = CreateNodePatch | TranslateNodePatch | ConnectSocketsPatch | DisconnectSocketsPatch | UpdateNodeSettingsPatch;
