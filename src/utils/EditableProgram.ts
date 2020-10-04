@@ -180,6 +180,18 @@ export default class EditableProgram extends Program {
                 });
             });
         });
+
+        this.applyPatch({
+            type: ProgramPatchType.DELETE_NODE,
+            node: nodeId,
+            payload: {
+                componentId: this.getNode(nodeId).name,
+                position: {
+                    x: this.getNode(nodeId).position[0],
+                    y: this.getNode(nodeId).position[1],
+                }
+            }
+        });
     }
 
     get events() {

@@ -4,10 +4,11 @@ export enum ProgramPatchType {
     CONNECT_SOCKETS,
     UPDATE_NODE_SETTING,
     DISCONNECT_SOCKETS,
+    DELETE_NODE,
 }
 
 export type CreateNodePatch = {
-    type: ProgramPatchType.CREATE_NODE,
+    type: ProgramPatchType.CREATE_NODE | ProgramPatchType.DELETE_NODE,
     node: string;
     payload: {
         componentId: string;

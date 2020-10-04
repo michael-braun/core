@@ -167,7 +167,7 @@ export default class Program {
                             ...node.outputs,
                             [patch.payload.input.socket]: {
                                 connections: node.outputs[patch.payload.input.socket].connections.filter((c) => {
-                                    return c.node === patch.payload.output.node && c.input === patch.payload.output.socket;
+                                    return String(c.node) !== String(patch.payload.output.node) || c.input !== patch.payload.output.socket;
                                 }),
                             }
                         }
@@ -180,11 +180,25 @@ export default class Program {
                         ...node.inputs,
                         [patch.payload.output.socket]: {
                             connections: node.inputs[patch.payload.output.socket].connections.filter((c) => {
-                                return c.node === patch.payload.input.node && c.output === patch.payload.input.socket;
+                                return String(c.node) !== String(patch.payload.input.node) && c.output !== patch.payload.input.socket;
                             }),
                         }
                     }
                 }));
+
+                this.invalidateCache();
+                return true;
+            case ProgramPatchType.DELETE_NODE:
+                const newProgram = {
+                    ...this.program,
+                    nodes: {
+                        ...this.program.nodes,
+                    }
+                };
+
+                delete newProgram.nodes[patch.node];
+
+                this.program = newProgram;
 
                 this.invalidateCache();
                 return true;
