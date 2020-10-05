@@ -207,6 +207,10 @@ export default class Program {
         }
     }
 
+    toJSON() {
+        return this.program;
+    }
+
     protected invalidateCache() {
         this.#nodeCache = null;
         this.#connectionCache = null;
