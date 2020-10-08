@@ -10,7 +10,10 @@ export type ComponentDefinitionSocket = {
 export type ComponentDefinitionSetting = {
     id: string;
     type: string;
-    options?: object;
+    options?: {
+        name?: string;
+        [key: string]: any;
+    };
 }
 
 export type ComponentDefinitionEntry = {
