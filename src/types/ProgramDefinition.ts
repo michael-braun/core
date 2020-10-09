@@ -16,7 +16,13 @@ export type SocketConnections<T extends SocketConnection> = {
     }
 }
 
-export type ConfigData = { [definitionId: string]: { [id: string]: any } };
+export type Config<T> = {
+    id: string;
+    name: string;
+    value: T;
+}
+
+export type ConfigData = { [definitionId: string]: { [id: string]: Config<any> } };
 
 export type ProgramNode = {
     id: number | string;
