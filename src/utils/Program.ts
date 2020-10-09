@@ -1,4 +1,4 @@
-import { ProgramDefinition, ProgramNode } from "..";
+import { Config, ProgramDefinition, ProgramNode } from "..";
 import { ProgramPatch, ProgramPatchType } from "./ProgramPatch";
 
 export type ConnectionInfo = {
@@ -18,6 +18,8 @@ export default class Program {
     #nodeCache: ProgramNode[] | null = null;
 
     #connectionCache: ConnectionInfo[] | null = null;
+
+    #configCache: { [type: string]: any[] } = {};
 
     constructor(program: ProgramDefinition) {
         this.program = program;
@@ -73,6 +75,18 @@ export default class Program {
         }
 
         return this.#connectionCache;
+    }
+
+    getConfigsByType<T>(type: string): Config<T>[] {
+        if (!this.#configCache[type]) {
+            if (this.program.configs?.[type]) {
+                this.#configCache[type] = Object.values(this.program.configs[type]);
+            } else {
+                this.#configCache[type] = [];
+            }
+        }
+
+        return this.#configCache[type];
     }
 
     applyPatch(patch: ProgramPatch): boolean {
@@ -202,6 +216,24 @@ export default class Program {
 
                 this.invalidateCache();
                 return true;
+            case ProgramPatchType.CREATE_CONFIG:
+                this.program = {
+                    ...this.program,
+                    configs: {
+                        ...this.program.configs,
+                        [patch.payload.configDefinitionId]: {
+                            ...(this.program.configs[patch.payload.configDefinitionId] || {}),
+                            [patch.payload.id]: {
+                                id: patch.payload.id,
+                                name: patch.payload.name,
+                                value: patch.payload.value,
+                            }
+                        }
+                    }
+                }
+
+                this.invalidateCache();
+                return true;
             default:
                 return false;
         }
@@ -214,5 +246,6 @@ export default class Program {
     protected invalidateCache() {
         this.#nodeCache = null;
         this.#connectionCache = null;
+        this.#configCache = {};
     }
 }

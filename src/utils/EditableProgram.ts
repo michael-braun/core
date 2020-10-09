@@ -83,6 +83,22 @@ export default class EditableProgram extends Program {
         this.#events.emit('update-node', { node: nodeId });
     }
 
+    createConfig(configDefinitionId: string, name: string, data: { [id: string]: any }) {
+        const configId = uuid();
+        this.applyPatch({
+            type: ProgramPatchType.CREATE_CONFIG,
+            payload: {
+                configDefinitionId,
+                id: configId,
+                name,
+                value: data,
+            },
+        });
+        return {
+            id: configId,
+        };
+    }
+
     applyPatch(patch: ProgramPatch): boolean {
         const retVal = super.applyPatch(patch);
 
@@ -98,6 +114,12 @@ export default class EditableProgram extends Program {
             case ProgramPatchType.UPDATE_NODE_SETTING:
             case ProgramPatchType.TRANSLATE_NODE:
                 this.#events.emit('update-node', { node: patch.node });
+                break;
+            case ProgramPatchType.CREATE_CONFIG:
+                this.#events.emit('update-config', {
+                    configId: patch.payload.id,
+                    configDefinitionId: patch.payload.configDefinitionId,
+                });
                 break;
         }
 
