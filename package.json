@@ -1,6 +1,6 @@
 {
   "name": "@visual-nodes/core",
-  "version": "0.0.2-beta.4",
+  "version": "0.0.2-beta.5",
   "description": "",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
