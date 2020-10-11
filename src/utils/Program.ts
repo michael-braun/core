@@ -234,6 +234,23 @@ export default class Program {
 
                 this.invalidateCache();
                 return true;
+            case ProgramPatchType.UPDATE_CONFIG:
+                this.program = {
+                    ...this.program,
+                    configs: {
+                        ...this.program.configs,
+                        [patch.payload.configDefinitionId]: {
+                            ...(this.program.configs[patch.payload.configDefinitionId] || {}),
+                            [patch.payload.id]: {
+                                ...(this.program.configs[patch.payload.configDefinitionId][patch.payload.id] || {}),
+                                value: patch.payload.value,
+                            }
+                        }
+                    }
+                }
+
+                this.invalidateCache();
+                return true;
             default:
                 return false;
         }

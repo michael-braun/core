@@ -6,6 +6,7 @@ export enum ProgramPatchType {
     DISCONNECT_SOCKETS,
     DELETE_NODE,
     CREATE_CONFIG,
+    UPDATE_CONFIG,
 }
 
 export type CreateNodePatch = {
@@ -77,9 +78,19 @@ export type CreateConfigPatch = {
     };
 };
 
+export type UpdateConfigPatch = {
+    type: ProgramPatchType.UPDATE_CONFIG;
+    payload: {
+        id: string;
+        configDefinitionId: string;
+        value: { [key: string]: any };
+    };
+};
+
 export type ProgramPatch = CreateNodePatch
     | TranslateNodePatch
     | ConnectSocketsPatch
     | DisconnectSocketsPatch
     | UpdateNodeSettingsPatch
-    | CreateConfigPatch;
+    | CreateConfigPatch
+    | UpdateConfigPatch;
