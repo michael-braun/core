@@ -89,6 +89,10 @@ export default class Program {
         return this.#configCache[type];
     }
 
+    getConfig<T>(type: string, id: string): Config<T> | null {
+        return this.program.configs[type]?.[id] || null;
+    }
+
     applyPatch(patch: ProgramPatch): boolean {
         switch (patch.type) {
             case ProgramPatchType.CREATE_NODE:
