@@ -16,6 +16,6 @@ export default class SocketDefinitionManager extends Manager<SocketDefinition> {
     }
 
     isCompatible(type1: string, type2:string): boolean {
-        return type1 === type2;
+        return type1 === type2 || this.core.socketCompatibilityDefinitions.isCompatible(type1, type2);
     }
 }
