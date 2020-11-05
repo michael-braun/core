@@ -15,6 +15,8 @@ export enum CoreEvents {
     REGISTER_CONFIG_DEFINITION = 'registeredConfigDefinition',
     REGISTERED_CONFIG_DEFINITION = 'registeredConfigDefinition',
     REGISTER_CONFIG_CONTROL_DEFINITION = 'registeredConfigControlDefinition',
+    REGISTER_SOCKET_COMPATIBILITY_DEFINITION = 'registerSocketCompatibilityDefinition',
+    REGISTERED_SOCKET_COMPATIBILITY_DEFINITION = 'registeredSocketCompatibilityDefinition',
     INSTALL_PLUGIN = 'installPlugin',
     INSTALLED_PLUGIN = 'installedPlugin',
     REGISTER_FEATURE_SUPPORT = 'registerFeatureSupport',

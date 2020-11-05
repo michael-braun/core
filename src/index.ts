@@ -7,6 +7,7 @@ import PluginManager from "./manager/PluginManager";
 import { CoreEventsTypes } from "./types/CoreEvents";
 import FeatureSupportManager from "./manager/FeatureSupportManager";
 import { PluginContext } from "./types/Plugin";
+import SocketCompatibilityManager from "./manager/SocketCompatibilityManager";
 
 export * from './types/ComponentDefinition';
 export * from './types/ConfigDefinition';
@@ -28,6 +29,8 @@ export default class VisualNodesCore<T extends CoreEventsTypes> {
     readonly #componentDefinitions: ComponentDefinitionManager = new ComponentDefinitionManager(this);
 
     readonly #socketDefinitions = new SocketDefinitionManager(this);
+
+    readonly #socketCompatibilityDefinitions = new SocketCompatibilityManager(this);
 
     readonly #controlDefinitions = new ControlDefinitionManager(this);
 
@@ -57,6 +60,10 @@ export default class VisualNodesCore<T extends CoreEventsTypes> {
 
     get configDefinitions(): ConfigDefinitionManager {
         return this.#configDefinitions;
+    }
+
+    get socketCompatibilityDefinitions(): SocketCompatibilityManager {
+        return this.#socketCompatibilityDefinitions;
     }
 
     get plugins(): PluginManager<PluginContext> {
